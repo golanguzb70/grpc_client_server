@@ -1,0 +1,35 @@
+syntax="proto3";
+
+package post_service;
+option go_package="genproto/post_service";
+import "common.proto";
+
+service PostService  {
+    rpc Create(CreateRequest) returns (Post) {};
+    rpc GetByKey(GetByKeyRequest) returns (Post) {};
+    rpc Find(Filter) returns (Posts) {};
+}
+
+message CreateRequest {
+    string id = 1;
+    string slug = 2;
+    string title = 3;
+    string body = 4;
+    string owner_id = 5;
+}
+
+message Post {
+    string id = 1;
+    string slug = 2;
+    string title = 3;
+    string body = 4;
+    string owner_id = 5;
+    string created_at = 6;
+    string updated_at = 7;
+    string deleted_at = 8;
+}
+
+message Posts {
+    int32 count = 1;
+    repeated Post items = 2;
+}

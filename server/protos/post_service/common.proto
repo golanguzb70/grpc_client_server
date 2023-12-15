@@ -1,0 +1,15 @@
+syntax="proto3";
+
+package post_service;
+option go_package="genproto/post_service";
+
+message GetByKeyRequest {
+    string id = 1;
+}
+
+message Filter {
+    int32 page = 1;
+    int32 limit = 2;
+    bool sort_asc = 3;
+    string search = 4;
+}
