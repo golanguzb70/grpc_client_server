@@ -3,7 +3,8 @@ syntax="proto3";
 package post_service;
 option go_package="genproto/post_service";
 
-message GetByKeyRequest {
+
+message KeyRequest {
     string id = 1;
 }
 

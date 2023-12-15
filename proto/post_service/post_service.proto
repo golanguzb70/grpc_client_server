@@ -2,12 +2,15 @@ syntax="proto3";
 
 package post_service;
 option go_package="genproto/post_service";
+import "google/protobuf/empty.proto";
 import "common.proto";
 
 service PostService  {
     rpc Create(CreateRequest) returns (Post) {};
-    rpc GetByKey(GetByKeyRequest) returns (Post) {};
+    rpc GetByKey(KeyRequest) returns (Post) {};
     rpc Find(Filter) returns (Posts) {};
+    rpc Update(UpdateRequest) returns (Post) {};
+    rpc Delete(KeyRequest) returns (google.protobuf.Empty) {};
 }
 
 message CreateRequest {
@@ -16,6 +19,13 @@ message CreateRequest {
     string title = 3;
     string body = 4;
     string owner_id = 5;
+}
+
+message UpdateRequest {
+    string id = 1;
+    string slug = 2;
+    string title = 3;
+    string body = 4;
 }
 
 message Post {

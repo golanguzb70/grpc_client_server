@@ -6,9 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	pb "github.com/golanguzb70/grpc_client_server/server/genproto/post_service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // PostService ...
@@ -38,7 +40,7 @@ func (s *PostService) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Po
 	return s.Posts[req.Id], nil
 }
 
-func (s *PostService) GetByKey(ctx context.Context, req *pb.GetByKeyRequest) (*pb.Post, error) {
+func (s *PostService) GetByKey(ctx context.Context, req *pb.KeyRequest) (*pb.Post, error) {
 	v, ok := s.Posts[req.GetId()]
 	if !ok {
 		return &pb.Post{}, status.Error(codes.NotFound, fmt.Sprintf("item with id [%s] not found", req.Id))
@@ -62,10 +64,36 @@ func (s *PostService) Find(ctx context.Context, req *pb.Filter) (*pb.Posts, erro
 	} else {
 		response.Items = response.Items[(req.Page-1)*req.Limit:]
 	}
-	
+
 	if len(response.Items) > int(req.Limit) {
 		response.Items = response.Items[:req.Limit]
 	}
 
 	return response, nil
+}
+
+func (s *PostService) Update(ctx context.Context, req *pb.UpdateRequest) (*pb.Post, error) {
+	v, ok := s.Posts[req.GetId()]
+	if !ok {
+		return &pb.Post{}, status.Error(codes.NotFound, fmt.Sprintf("item with id [%s] not found", req.Id))
+	}
+
+	v.Title = req.Title
+	v.Body = req.Body
+	v.UpdatedAt = time.Now().Format(time.RFC3339)
+
+	s.Posts[req.Id] = v
+
+	return s.Posts[req.Id], nil
+}
+
+func (s *PostService) Delete(ctx context.Context, req *pb.KeyRequest) (*empty.Empty, error) {
+	_, ok := s.Posts[req.GetId()]
+	if !ok {
+		return &emptypb.Empty{}, status.Error(codes.NotFound, fmt.Sprintf("item with id [%s] not found", req.Id))
+	}
+
+	delete(s.Posts, req.GetId())
+
+	return &emptypb.Empty{}, nil
 }
